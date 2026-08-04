@@ -1,18 +1,20 @@
 from fastapi import FastAPI
+from app.core.config import settings
 
 app = FastAPI(
-    title = "Url Shortener",
-    version = "1.0.0"
+    title = settings.app_name,
+    version = settings.app_version
 )
 
 @app.get("/")
 def root():
     return {
-     "message":"Welcome to the url shortener api"
+     "message":f"Welcome to {settings.app_name}"
     }
 
 @app.get("/health")
 def health():
     return {
-        "status": "healthy"
+        "status": "healthy",
+        "debug": settings.debug
     }
