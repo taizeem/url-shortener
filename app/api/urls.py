@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.models.urls import URL
 from app.schemas.url import URLCreate
 from app.utils.short_code import generate_short_code
-
+from app.schemas.url import URLStatsResponse
 
 router = APIRouter(
     prefix="/urls",
@@ -32,6 +32,22 @@ def create_short_url(data: URLCreate, db:Session = Depends(get_db)):
         "original_url": url.original_url,
         "short_code": url.short_code
     }
+
+@router.get("/{short_code}/stats", response_model=URLStatsResponse)
+def get_url_stats(
+    short_code: str,
+    db: Session = Depends(get_db),
+):
+    url = db.query(URL).filter(URL.short_code == short_code).first()
+
+    if not url:
+        raise HTTPException(
+            status_code=404,
+            detail="Short URL not found",
+        )
+
+    return url
+
 @router.get("/{short_code}")
 def redirect_to_url(
     short_code: str,
