@@ -5,18 +5,30 @@ from fastapi.responses import RedirectResponse
 
 from app.core.database import get_db
 from app.models.urls import URL
-from app.schemas.url import URLCreate
+from app.schemas.url import URLCreate, URLStatsResponse, URLResponse
 from app.utils.short_code import generate_short_code
-from app.schemas.url import URLStatsResponse
+
 
 router = APIRouter(
     prefix="/urls",
     tags=["URLS"],
 )
 
-@router.post("/")
+@router.post("/",status_code=201,response_model=URLResponse)
 
 def create_short_url(data: URLCreate, db:Session = Depends(get_db)):
+    
+    existing_url = db.query(URL).filter(
+        URL.original_url == str(data.original_url)
+    ).first()
+
+    if existing_url:
+        return{
+            "id": existing_url.id,
+            "original_url": existing_url.original_url,
+            "short_code": existing_url.short_code
+        }
+
     short_code = generate_short_code()
     url = URL(
         original_url = str(data.original_url),
