@@ -9,3 +9,5 @@ class URL(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     original_url: Mapped[str] = mapped_column(String(2048))
     short_code : Mapped[str] = mapped_column(String(10),unique=True, index=True)
+
+    clicks : Mapped[int] = mapped_column(default= 0)

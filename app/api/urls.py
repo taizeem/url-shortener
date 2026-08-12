@@ -44,4 +44,6 @@ def redirect_to_url(
             status_code= 404,
             detail= "Short URL not found"
         )
+    url.clicks += 1
+    db.commit()
     return RedirectResponse(url.original_url)
